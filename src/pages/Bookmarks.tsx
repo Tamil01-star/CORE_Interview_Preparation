@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useProgress } from '../context/ProgressContext';
 import { QuestionCard } from '../components/ui/QuestionCard';
 import type { Question } from '../types';
+import { fetchQuestionsFromSupabase } from '../utils/supabaseClient';
 import { Bookmark, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { topics } from '../data/topics';
@@ -15,39 +16,7 @@ export const Bookmarks: React.FC = () => {
     const loadBookmarks = async () => {
       setLoading(true);
       try {
-        // In a real scenario with backend, we'd fetch by IDs.
-        // Here we simulate loading all available data files and filtering.
-        // For simplicity, we just load the files we have.
-        const files = [
-          import('../data/coreEce').catch(() => ({ coreEceQuestions: [] })),
-          import('../data/digitalElectronics').catch(() => ({ digitalElectronicsQuestions: [] })),
-          import('../data/analogElectronics').catch(() => ({ analogElectronicsQuestions: [] })),
-          import('../data/circuitTheory').catch(() => ({ circuitTheoryQuestions: [] })),
-          import('../data/embeddedC').catch(() => ({ embeddedCQuestions: [] })),
-          import('../data/microcontrollers').catch(() => ({ microcontrollersQuestions: [] })),
-          import('../data/embeddedSystems').catch(() => ({ embeddedSystemsQuestions: [] })),
-          import('../data/sensors').catch(() => ({ sensorsQuestions: [] })),
-          import('../data/vlsi').catch(() => ({ vlsiQuestions: [] })),
-          import('../data/verilog').catch(() => ({ verilogQuestions: [] })),
-          import('../data/semiconductors').catch(() => ({ semiconductorsQuestions: [] }))
-        ];
-
-        const modules = await Promise.all(files);
-        
-        let allQuestions: Question[] = [];
-        modules.forEach((mod: any) => {
-          if (mod.coreEceQuestions) allQuestions.push(...mod.coreEceQuestions);
-          if (mod.digitalElectronicsQuestions) allQuestions.push(...mod.digitalElectronicsQuestions);
-          if (mod.analogElectronicsQuestions) allQuestions.push(...mod.analogElectronicsQuestions);
-          if (mod.circuitTheoryQuestions) allQuestions.push(...mod.circuitTheoryQuestions);
-          if (mod.embeddedCQuestions) allQuestions.push(...mod.embeddedCQuestions);
-          if (mod.microcontrollersQuestions) allQuestions.push(...mod.microcontrollersQuestions);
-          if (mod.embeddedSystemsQuestions) allQuestions.push(...mod.embeddedSystemsQuestions);
-          if (mod.sensorsQuestions) allQuestions.push(...mod.sensorsQuestions);
-          if (mod.vlsiQuestions) allQuestions.push(...mod.vlsiQuestions);
-          if (mod.verilogQuestions) allQuestions.push(...mod.verilogQuestions);
-          if (mod.semiconductorsQuestions) allQuestions.push(...mod.semiconductorsQuestions);
-        });
+        const allQuestions = await fetchQuestionsFromSupabase();
 
         const found = allQuestions
           .filter(q => bookmarkedIds.includes(q.id))

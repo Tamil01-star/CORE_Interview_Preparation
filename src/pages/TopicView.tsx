@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { topics } from '../data/topics';
 import { QuestionCard } from '../components/ui/QuestionCard';
 import type { Question, Badge as BadgeType } from '../types';
+import { fetchQuestionsFromSupabase } from '../utils/supabaseClient';
 import { IconRenderer } from '../components/ui/IconRenderer';
 import { Filter, ArrowLeft } from 'lucide-react';
 
@@ -16,52 +17,10 @@ export const TopicView: React.FC = () => {
   const filters = ['All', 'Beginner', 'Intermediate', 'Advanced', 'Frequently Asked', 'Conceptual', 'Practical', 'Coding', 'Numerical'];
 
   useEffect(() => {
-    // Dynamic import to split chunks and handle lazy loading of huge data files
     const loadData = async () => {
       setLoading(true);
       try {
-        let data: Question[] = [];
-        
-        // This simulates importing the specific data file
-        // In a real app we'd map topicId to the dynamic import
-        switch (topicId) {
-          case 'core-ece':
-            data = (await import('../data/coreEce')).coreEceQuestions;
-            break;
-          case 'digital-electronics':
-            data = (await import('../data/digitalElectronics')).digitalElectronicsQuestions;
-            break;
-          case 'analog-electronics':
-            data = (await import('../data/analogElectronics')).analogElectronicsQuestions;
-            break;
-          case 'circuit-theory':
-            data = (await import('../data/circuitTheory')).circuitTheoryQuestions;
-            break;
-          case 'embedded-systems':
-            data = (await import('../data/embeddedSystems')).embeddedSystemsQuestions;
-            break;
-          case 'microcontrollers':
-            data = (await import('../data/microcontrollers')).microcontrollersQuestions;
-            break;
-          case 'programming':
-            data = (await import('../data/embeddedC')).embeddedCQuestions;
-            break;
-          case 'sensors-iot':
-            data = (await import('../data/sensors')).sensorsQuestions;
-            break;
-          case 'vlsi':
-            // Merge both vlsi and verilog into the VLSI topic
-            const vlsiData = await import('../data/vlsi');
-            const verilogData = await import('../data/verilog');
-            data = [...vlsiData.vlsiQuestions, ...verilogData.verilogQuestions];
-            break;
-          case 'semiconductors':
-            data = (await import('../data/semiconductors')).semiconductorsQuestions;
-            break;
-          default:
-            data = [];
-        }
-        
+        const data = await fetchQuestionsFromSupabase(topicId);
         setQuestions(data);
       } catch (error) {
         console.error("Failed to load topic data", error);

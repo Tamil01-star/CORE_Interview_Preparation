@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { QuestionCard } from '../components/ui/QuestionCard';
 import type { Question } from '../types';
+import { fetchQuestionsFromSupabase } from '../utils/supabaseClient';
 import { Target, ArrowRight, Play } from 'lucide-react';
 import { topics } from '../data/topics';
 
@@ -14,36 +15,7 @@ export const InterviewMode: React.FC = () => {
     const loadData = async () => {
       setLoading(true);
       try {
-        const files = [
-          import('../data/coreEce').catch(() => ({ coreEceQuestions: [] })),
-          import('../data/digitalElectronics').catch(() => ({ digitalElectronicsQuestions: [] })),
-          import('../data/analogElectronics').catch(() => ({ analogElectronicsQuestions: [] })),
-          import('../data/circuitTheory').catch(() => ({ circuitTheoryQuestions: [] })),
-          import('../data/embeddedC').catch(() => ({ embeddedCQuestions: [] })),
-          import('../data/microcontrollers').catch(() => ({ microcontrollersQuestions: [] })),
-          import('../data/embeddedSystems').catch(() => ({ embeddedSystemsQuestions: [] })),
-          import('../data/sensors').catch(() => ({ sensorsQuestions: [] })),
-          import('../data/vlsi').catch(() => ({ vlsiQuestions: [] })),
-          import('../data/verilog').catch(() => ({ verilogQuestions: [] })),
-          import('../data/semiconductors').catch(() => ({ semiconductorsQuestions: [] }))
-        ];
-
-        const modules = await Promise.all(files);
-        
-        let allQuestions: Question[] = [];
-        modules.forEach((mod: any) => {
-          if (mod.coreEceQuestions) allQuestions.push(...mod.coreEceQuestions);
-          if (mod.digitalElectronicsQuestions) allQuestions.push(...mod.digitalElectronicsQuestions);
-          if (mod.analogElectronicsQuestions) allQuestions.push(...mod.analogElectronicsQuestions);
-          if (mod.circuitTheoryQuestions) allQuestions.push(...mod.circuitTheoryQuestions);
-          if (mod.embeddedCQuestions) allQuestions.push(...mod.embeddedCQuestions);
-          if (mod.microcontrollersQuestions) allQuestions.push(...mod.microcontrollersQuestions);
-          if (mod.embeddedSystemsQuestions) allQuestions.push(...mod.embeddedSystemsQuestions);
-          if (mod.sensorsQuestions) allQuestions.push(...mod.sensorsQuestions);
-          if (mod.vlsiQuestions) allQuestions.push(...mod.vlsiQuestions);
-          if (mod.verilogQuestions) allQuestions.push(...mod.verilogQuestions);
-          if (mod.semiconductorsQuestions) allQuestions.push(...mod.semiconductorsQuestions);
-        });
+        const allQuestions = await fetchQuestionsFromSupabase();
 
         // Shuffle questions
         const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
