@@ -72,6 +72,7 @@ export const Bookmarks: React.FC = () => {
               question={question} 
               showTopic={true}
               topicName={topicName}
+              defaultExpanded={true}
             />
           ))
         ) : (

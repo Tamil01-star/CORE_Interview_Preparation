@@ -91,7 +91,7 @@ export const TopicView: React.FC = () => {
           </div>
         ) : filteredQuestions.length > 0 ? (
           filteredQuestions.map(q => (
-            <QuestionCard key={q.id} question={q} />
+            <QuestionCard key={q.id} question={q} defaultExpanded={true} />
           ))
         ) : (
           <div className="text-center p-12 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 text-slate-500">
