@@ -1,0 +1,15 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: var(--color-slate-50);
+    color: var(--color-slate-900);
+    transition-property: color, background-color;
+    transition-duration: 200ms;
+  }
+  
+  .dark body {
+    background-color: var(--color-slate-900);
+    color: var(--color-slate-100);
+  }
+}
