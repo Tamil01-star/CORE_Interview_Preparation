@@ -7,20 +7,31 @@ const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
 export const fetchQuestionsFromSupabase = async (topicId?: string): Promise<Question[]> => {
-  let query = supabase.from('questions').select('*');
-  
-  if (topicId) {
-    query = query.eq('topic_id', topicId);
+  const allRows: any[] = [];
+  const pageSize = 1000;
+  let offset = 0;
+
+  while (true) {
+    let query = supabase.from('questions').select('*').range(offset, offset + pageSize - 1);
+    
+    if (topicId) {
+      query = query.eq('topic_id', topicId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      console.error('Error fetching questions from Supabase:', error);
+      break;
+    }
+
+    if (!data || data.length === 0) break;
+    allRows.push(...data);
+    if (data.length < pageSize) break;
+    offset += data.length;
   }
 
-  const { data, error } = await query;
-
-  if (error) {
-    console.error('Error fetching questions from Supabase:', error);
-    return [];
-  }
-
-  return (data || []).map(row => ({
+  return allRows.map(row => ({
     id: row.id,
     topicId: row.topic_id,
     title: row.title,
